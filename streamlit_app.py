@@ -580,32 +580,46 @@ with st.expander("📎 Attach", expanded=False):
         st.session_state.thinking_speed = st.select_slider(ui["thinking_speed"], options=["Fast", "Normal", "Deep Think"], value=st.session_state.thinking_speed)
         st.session_state.web_search_enabled = st.toggle(ui["web_search_label"], value=st.session_state.web_search_enabled, help=ui["web_search_help"])
 
-col_chat_input, col_mic = st.columns([0.92, 0.08])
+voice_url = f"https://voicechat-phistashkaai.streamlit.app/?key={device_key}"
+components.html(f"""
+<div id="mic-btn-container" style="display:none;">
+    <button id="custom-mic-btn" style="
+        background: #2b2b2b;
+        border: 2px solid #555;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 6px;
+        transition: all 0.2s;
+        color: white;
+    " title="Open Voice Chat">🎙️</button>
+</div>
+<script>
+(function() {
+    function injectMicButton() {
+        const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
+        if (!chatInput) return setTimeout(injectMicButton, 200);
+        const sendBtn = chatInput.querySelector('button');
+        if (!sendBtn) return setTimeout(injectMicButton, 200);
+        if (document.getElementById('custom-mic-btn-injected')) return;
+        const micBtn = document.getElementById('custom-mic-btn');
+        if (!micBtn) return setTimeout(injectMicButton, 200);
+        const clone = micBtn.cloneNode(true);
+        clone.id = 'custom-mic-btn-injected';
+        clone.onclick = function() { window.open('{voice_url}', '_blank'); };
+        sendBtn.parentNode.insertBefore(clone, sendBtn.nextSibling);
+    }
+    injectMicButton();
+})();
+</script>
+""", height=0)
 
-with col_mic:
-    voice_url = f"https://voicechat-phistashkaai.streamlit.app/?key={device_key}"
-    mic_html = f"""
-    <a href="{voice_url}" target="_blank" style="text-decoration:none;">
-        <button style="
-            background: #2b2b2b;
-            border: 2px solid #555;
-            border-radius: 50%;
-            width: 42px;
-            height: 42px;
-            cursor: pointer;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 5px;
-            transition: all 0.2s;
-        " title="Open Voice Chat">🎙️</button>
-    </a>
-    """
-    components.html(mic_html, height=55)
-
-with col_chat_input:
-    prompt = st.chat_input(st.session_state.placeholder_text)
+prompt = st.chat_input(st.session_state.placeholder_text)
 
 if prompt:
     st.session_state.placeholder_text = random.choice(ui["phrases"])
