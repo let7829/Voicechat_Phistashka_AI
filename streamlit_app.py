@@ -155,7 +155,16 @@ components.html("""
 """, height=0)
 
 THEMES = {
-    "Default": "",
+    "Old": "",
+    "Default": (
+        ".stApp,[data-testid='stAppViewContainer']{background:#0d1117!important;color:#c9d1d9!important}"
+        "[data-testid='stSidebar']{background:#161b22!important}"
+        "[data-testid='stChatInput'] textarea{background:#2b2b2b!important;border:1px solid #555!important;color:#fff!important}"
+        "[data-testid='stChatInput'] button{background:#1f6feb!important;color:#fff!important;border:none!important}"
+        "input,textarea{background:#2b2b2b!important;border:1px solid #555!important;color:#fff!important}"
+        "div.stButton>button{background:#1f6feb!important;color:#fff!important;border:none!important}"
+        "h1,h2,h3,p{color:#c9d1d9!important}"
+    ),
     "Dark Blue": ".stApp,[data-testid='stAppViewContainer']{background:#0d1117!important;color:#c9d1d9!important}[data-testid='stSidebar']{background:#161b22!important}h1,h2,h3,p{color:#58a6ff!important}",
     "Cyan Neon": ".stApp,[data-testid='stAppViewContainer']{background:#000c14!important;color:#00f0ff!important}[data-testid='stSidebar']{background:#001625!important;border-right:1px solid #00f0ff!important}h1,h2,h3,p{color:#00f0ff!important;text-shadow:0 0 4px #00f0ff}div.stButton>button{background:#001625!important;color:#00f0ff!important;border:1px solid #00f0ff!important;box-shadow:0 0 5px #00f0ff}",
     "Dark Green": ".stApp,[data-testid='stAppViewContainer']{background:#0a140d!important;color:#d0e8d7!important}[data-testid='stSidebar']{background:#112216!important}h1,h2,h3,p{color:#4ade80!important}",
@@ -180,6 +189,25 @@ st.markdown("""
     .lightbox:target { display: flex; justify-content: center; align-items: center; }
     .lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; }
     .close-btn { position: absolute; top: 20px; left: 20px; color: white; font-size: 40px; text-decoration: none; font-weight: bold; }
+    
+    /* Vibrant toggle animations */
+    [data-testid="stToggle"] label div {
+        transition: all 0.3s ease !important;
+    }
+    [data-testid="stToggle"] label[aria-checked="true"] div {
+        background: #ff007f !important;
+        box-shadow: 0 0 20px #ff007f, 0 0 40px #ff007f88 !important;
+        animation: pulse 1s infinite;
+    }
+    [data-testid="stToggle"] label[aria-checked="false"] div {
+        background: #555 !important;
+        box-shadow: none !important;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 20px #ff007f, 0 0 40px #ff007f88; }
+        50% { box-shadow: 0 0 30px #ff00ff, 0 0 60px #ff00ff88; }
+        100% { box-shadow: 0 0 20px #ff007f, 0 0 40px #ff007f88; }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -458,7 +486,7 @@ with st.sidebar:
         st.session_state.native_key = None
         st.rerun()
 
-if st.session_state.selected_theme != "Default":
+if st.session_state.selected_theme != "Old":
     st.markdown(f"<style>{THEMES[st.session_state.selected_theme]}</style>", unsafe_allow_html=True)
 
 messages = st.session_state.all_chats[st.session_state.current_chat]
@@ -552,7 +580,34 @@ with st.expander("📎 Attach", expanded=False):
         st.session_state.thinking_speed = st.select_slider(ui["thinking_speed"], options=["Fast", "Normal", "Deep Think"], value=st.session_state.thinking_speed)
         st.session_state.web_search_enabled = st.toggle(ui["web_search_label"], value=st.session_state.web_search_enabled, help=ui["web_search_help"])
 
-if prompt := st.chat_input(st.session_state.placeholder_text):
+col_chat_input, col_mic = st.columns([0.92, 0.08])
+
+with col_mic:
+    voice_url = f"https://voicechat-phistashkaai.streamlit.app/?key={device_key}"
+    mic_html = f"""
+    <a href="{voice_url}" target="_blank" style="text-decoration:none;">
+        <button style="
+            background: #2b2b2b;
+            border: 2px solid #555;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px;
+            transition: all 0.2s;
+        " title="Open Voice Chat">🎙️</button>
+    </a>
+    """
+    components.html(mic_html, height=55)
+
+with col_chat_input:
+    prompt = st.chat_input(st.session_state.placeholder_text)
+
+if prompt:
     st.session_state.placeholder_text = random.choice(ui["phrases"])
     st.session_state.api_switch_attempts = 0
     msg_content = prompt
