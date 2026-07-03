@@ -159,7 +159,8 @@ THEMES = {
     "Default": (
         ".stApp,[data-testid='stAppViewContainer']{background:#0d1117!important;color:#c9d1d9!important}"
         "[data-testid='stSidebar']{background:#161b22!important}"
-        "[data-testid='stChatInput'] textarea{background:#2b2b2b!important;border:1px solid #555!important;color:#fff!important}"
+        "[data-testid='stChatInput']{background:#2b2b2b!important;border:1px solid #555!important;border-radius:8px!important}"
+        "[data-testid='stChatInput'] textarea{background:transparent!important;border:none!important;color:#fff!important;box-shadow:none!important}"
         "[data-testid='stChatInput'] button{background:#1f6feb!important;color:#fff!important;border:none!important}"
         "input,textarea{background:#2b2b2b!important;border:1px solid #555!important;color:#fff!important}"
         "div.stButton>button{background:#1f6feb!important;color:#fff!important;border:none!important}"
@@ -190,7 +191,6 @@ st.markdown("""
     .lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; }
     .close-btn { position: absolute; top: 20px; left: 20px; color: white; font-size: 40px; text-decoration: none; font-weight: bold; }
     
-    /* Vibrant toggle animations */
     [data-testid="stToggle"] label div {
         transition: all 0.3s ease !important;
     }
@@ -585,7 +585,7 @@ components.html(f"""
 <div id="mic-btn-container" style="display:none;">
     <button id="custom-mic-btn" style="
         background: #2b2b2b;
-        border: 2px solid #555;
+        border: 1px solid #555;
         border-radius: 50%;
         width: 36px;
         height: 36px;
