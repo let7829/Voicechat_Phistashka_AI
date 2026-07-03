@@ -600,8 +600,8 @@ components.html(f"""
     " title="Open Voice Chat">🎙️</button>
 </div>
 <script>
-(function() {
-    function injectMicButton() {
+(function() {{
+    function injectMicButton() {{
         const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
         if (!chatInput) return setTimeout(injectMicButton, 200);
         const sendBtn = chatInput.querySelector('button');
@@ -611,11 +611,11 @@ components.html(f"""
         if (!micBtn) return setTimeout(injectMicButton, 200);
         const clone = micBtn.cloneNode(true);
         clone.id = 'custom-mic-btn-injected';
-        clone.onclick = function() { window.open('{voice_url}', '_blank'); };
+        clone.onclick = function() {{ window.open('{voice_url}', '_blank'); }};
         sendBtn.parentNode.insertBefore(clone, sendBtn.nextSibling);
-    }
+    }}
     injectMicButton();
-})();
+}})();
 </script>
 """, height=0)
 
